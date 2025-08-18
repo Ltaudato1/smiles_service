@@ -1,12 +1,13 @@
 from fastapi import APIRouter, File, UploadFile
 from rdkit import Chem
 import csv
-from chem_storage.chem_storager import SmilesStorage
+from chems.chem_storager import SmilesStorage
 
 router = APIRouter()
 storage = SmilesStorage()
 
 # ======================== POST =====================================
+
 
 @router.post("/add")
 async def add_molecule(id: str, smiles: str):
@@ -15,6 +16,7 @@ async def add_molecule(id: str, smiles: str):
         storage.add_molecule(id, smiles)
         return {"message": "Molecule added successfully."}
     return {"message": "Invalid SMILES string."}
+
 
 @router.post("/upload_csv")
 async def upload_csv(file: UploadFile = File(...)):
@@ -45,6 +47,7 @@ async def upload_csv(file: UploadFile = File(...)):
 
 # ======================== PUT =====================================
 
+
 @router.put("/update")
 async def update_molecule(id: str, smiles: str):
     mol = Chem.MolFromSmiles(smiles)
@@ -58,6 +61,7 @@ async def update_molecule(id: str, smiles: str):
 
 # ======================== DELETE =====================================
 
+
 @router.delete("/delete")
 async def delete_molecule(id: str):
     if storage.delete_molecule(id):
@@ -66,6 +70,7 @@ async def delete_molecule(id: str):
 
 # ======================== GET =====================================
 
+
 @router.get("/get")
 async def get_molecule(id: str):
     smiles = storage.get_molecule(id)
@@ -73,9 +78,11 @@ async def get_molecule(id: str):
         return {"id": id, "smiles": smiles}
     return {"message": "Molecule not found."}
 
+
 @router.get("/all")
 async def get_all_molecules():
     return {"molecules": storage.storage}
+
 
 @router.get("/search")
 async def substructure_search(molecule: str):

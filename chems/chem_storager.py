@@ -6,15 +6,23 @@ class SmilesStorage:
         self.storage = {}
 
     def add_molecule(self, id: str, smiles: str) -> bool:
-        self.storage[id] = {'smiles': smiles, 'mol': Chem.MolFromSmiles(smiles)}
+        self.storage[id] = {
+            'smiles': smiles,
+            'mol': Chem.MolFromSmiles(smiles)
+        }
         return True
 
     def get_molecule(self, id: str) -> str:
-        return self.storage.get(id, "")['smiles']
+        if id in self.storage:
+            return self.storage[id]['smiles']
+        return ""
 
     def update_molecule(self, id: str, smiles: str) -> bool:
         if id in self.storage:
-            self.storage[id] = smiles
+            self.storage[id] = {
+                'smiles': smiles,
+                'mol': Chem.MolFromSmiles(smiles)
+            }
             return True
         return False
 
