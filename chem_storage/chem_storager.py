@@ -24,7 +24,7 @@ class SmilesStorage:
             return True
         return False
 
-    def substructure_search(self, molecule: str) -> list:
+    def substructure_search(self, molecule: str) -> dict:
         target_molecule = Chem.MolFromSmiles(molecule)
         answer = {}
         for id, smiles in self.storage.items():
