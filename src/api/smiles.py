@@ -35,15 +35,40 @@ async def upload_csv(file: UploadFile = File(...)):
             if mol is None:
                 raise ValueError("Invalid SMILES")
             storage.add_molecule(mol_id, smiles)
-            added.append(mol_id)
+            added.append({'id': mol_id, 'smiles': smiles})
         except Exception as e:
             errors.append({"id": mol_id, "smiles": smiles, "error": str(e)})
 
     return {
-        "message": f"Загружено {len(added)} молекул",
+        "message": f"Uploaded {len(added)} molecules",
         "added": added,
         "errors": errors
     }
+
+
+# ======================== GET =====================================
+
+
+@router.get("/get")
+async def get_molecule(id: str):
+    smiles = storage.get_molecule(id)
+    if smiles:
+        return {"id": id, "smiles": smiles}
+    return {"message": "Molecule not found."}
+
+
+@router.get("/all")
+async def get_all_molecules():
+    return storage.get_all_molecules()
+
+
+@router.get("/search")
+async def substructure_search(molecule: str):
+    mol = Chem.MolFromSmiles(molecule)
+    if mol:
+        return {"matches": storage.substructure_search(molecule)}
+    return {"message": "Invalid SMILES string."}
+
 
 # ======================== PUT =====================================
 
@@ -59,6 +84,7 @@ async def update_molecule(id: str, smiles: str):
     else:
         return {"message": "Invalid SMILES string."}
 
+
 # ======================== DELETE =====================================
 
 
@@ -67,26 +93,3 @@ async def delete_molecule(id: str):
     if storage.delete_molecule(id):
         return {"message": "Molecule deleted successfully."}
     return {"message": "Molecule not found."}
-
-# ======================== GET =====================================
-
-
-@router.get("/get")
-async def get_molecule(id: str):
-    smiles = storage.get_molecule(id)
-    if smiles:
-        return {"id": id, "smiles": smiles}
-    return {"message": "Molecule not found."}
-
-
-@router.get("/all")
-async def get_all_molecules():
-    return {"molecules": storage.storage}
-
-
-@router.get("/search")
-async def substructure_search(molecule: str):
-    mol = Chem.MolFromSmiles(molecule)
-    if mol:
-        return {"matches": storage.substructure_search(molecule)}
-    return {"message": "Invalid SMILES string."}

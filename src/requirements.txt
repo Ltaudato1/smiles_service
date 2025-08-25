@@ -1,0 +1,7 @@
+rdkit
+fastapi
+uvicorn[standard]
+python-multipart
+sqlalchemy
+dotenv
+psycopg2-binary
